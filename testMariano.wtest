@@ -1,0 +1,113 @@
+import golosinas.*
+import mariano.*
+
+describe "Tests de Mariano" {
+  const bombon = new Bombon()
+  const caramelo = new Caramelo()
+  const chocolatito = new Chocolatin(pesoInicial = 40)
+  const alfajor = new Alfajor()
+  const chupetin = new Chupetin()
+  
+  test "Mariano compra y desecha golosinas correctamente" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    assert.equals(2, mariano.cantidadDeGolosinas())
+    mariano.desechar(caramelo)
+    assert.equals(1, mariano.cantidadDeGolosinas())
+    assert.that(mariano.tieneLaGolosina(bombon))
+    assert.notThat(mariano.tieneLaGolosina(caramelo))
+  }
+  
+  test "Mariano prueba todas las golosinas" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    mariano.probarGolosinas()
+    assert.that(bombon.peso() < 15)
+    assert.that(caramelo.peso() < 5)
+  }
+  
+  test "Mariano detecta golosinas sin TACC" {
+    mariano.comprar(bombon) // sin TACC
+    mariano.comprar(alfajor) // con gluten
+    assert.that(mariano.hayGolosinaSinTACC())
+  }
+  
+  test "Mariano cumple precios cuidados" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    assert.that(mariano.preciosCuidados())
+    mariano.comprar(alfajor)
+    assert.notThat(mariano.preciosCuidados())
+  }
+  
+  test "Mariano puede buscar golosinas por sabor" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    assert.equals(frutilla, mariano.golosinaDeSabor(frutilla).sabor())
+    assert.equals(2, mariano.golosinasDeSabor(frutilla).size())
+  }
+  
+  test "Mariano obtiene sabores únicos correctamente" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    mariano.comprar(chocolatito)
+    assert.equals(2, mariano.sabores().size()) // frutilla y chocolate
+  }
+  
+  test "Mariano puede encontrar la golosina más cara" {
+    mariano.comprar(bombon)
+    mariano.comprar(chocolatito)
+    assert.equals(chocolatito, mariano.golosinaMasCara())
+  }
+  
+  test "Mariano suma correctamente el peso total" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    assert.equals(bombon.peso() + caramelo.peso(), mariano.pesoGolosinas())
+  }
+  
+  test "Mariano detecta golosinas faltantes" {
+    mariano.comprar(bombon)
+    assert.equals(
+      3,
+      mariano.golosinasFaltantes(
+        #{bombon, chocolatito, alfajor, chupetin}
+      ).size()
+    )
+  }
+  
+  test "Mariano detecta gustos faltantes" {
+    mariano.comprar(bombon)
+    mariano.comprar(chocolatito)
+    assert.equals(
+      2,
+      mariano.gustosFaltantes(#{vainilla, naranja, frutilla, chocolate}).size()
+    )
+  }
+  
+  // ITEMS DESAFÍO
+  test "Mariano calcula gasto por sabor" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    assert.equals(6, mariano.gastoEn(frutilla)) // 5 + 1
+  }
+  
+  test "Mariano detecta sabor más popular" {
+    mariano.comprar(bombon)
+    mariano.comprar(caramelo)
+    mariano.comprar(caramelo)
+    assert.equals(frutilla, mariano.saborMasPopular())
+  }
+  
+  test "Mariano detecta sabor más pesado" {
+    mariano.comprar(chocolatito)
+    mariano.comprar(bombon)
+    assert.equals(chocolate, mariano.saborMasPesado())
+  }
+  
+  test "Mariano reconoce que compró y desechó una golosina" {
+    mariano.comprar(caramelo)
+    mariano.desechar(caramelo)
+    assert.that(mariano.comproYDesecho(caramelo))
+  }
+}

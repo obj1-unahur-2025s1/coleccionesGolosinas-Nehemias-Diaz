@@ -17,25 +17,21 @@ object vainilla {
 class Bombon {
   var peso = 15
   
-  method peso() = peso
-  
   method precio() = 5
   
   method sabor() = frutilla
   
   method esLibreDeGluten() = true
   
-  method pesoActual() = peso
+  method peso() = peso
   
   method mordisco() {
-    peso -= (peso * 0.2) + 1
+    peso = ((peso * 0.8) - 1).max(0)
   }
 }
 
 class Alfajor {
   var peso = 300
-  
-  method peso() = peso
   
   method precio() = 12
   
@@ -43,8 +39,10 @@ class Alfajor {
   
   method esLibreDeGluten() = false
   
+  method peso() = peso
+  
   method mordisco() {
-    peso -= peso * 0.2
+    peso *= 0.8
   }
 }
 
@@ -67,6 +65,8 @@ class Caramelo {
 class Chupetin {
   var peso = 7
   
+  method peso() = peso
+  
   method precio() = 2
   
   method sabor() = naranja
@@ -75,7 +75,7 @@ class Chupetin {
   
   method mordisco() {
     if (peso >= 2) {
-      peso -= peso * 0.2
+      peso *= 0.9
     }
   }
 }
@@ -95,7 +95,7 @@ class Oblea {
     if (peso > 70) {
       peso /= 2
     } else {
-      peso -= peso * 0.25
+      peso *= 0.75
     }
   }
 }
@@ -112,18 +112,19 @@ class Chocolatin {
   
   method peso() = (pesoInicial - comido).max(0)
   
-  method mordisco() {
-    comido += 2
-  }
-  
   method sabor() = chocolate
   
   method esLibreDeGluten() = false
+  
+  method mordisco() {
+    comido += 2
+  }
 }
 
 class GolosinaBaniada {
   var golosinaDentro
   var pesoBanio = 4
+  var mordiscosDados = 0
   
   method golosinaDentro(unaGolosina) {
     golosinaDentro = unaGolosina
@@ -139,7 +140,10 @@ class GolosinaBaniada {
   
   method mordisco() {
     golosinaDentro.mordisco()
-    pesoBanio = (pesoBanio - 2).max(0)
+    if (mordiscosDados < 2) {
+      pesoBanio = (pesoBanio - 2).max(0) // Asegura no negativo
+      mordiscosDados += 1
+    }
   }
 }
 
@@ -150,13 +154,11 @@ class PastillaTuttiFrutti {
   
   method peso() = 5
   
-  method precio() {
-    if (esLibreDeGluten) 7 else 10
-  }
+  method precio() = if (esLibreDeGluten) 7 else 10
   
   method mordisco() {
-    saborActual += 1
+    saborActual = (saborActual + 1) % 3
   }
   
-  method sabor() = sabores.get(saborActual % 3)
+  method sabor() = sabores.get(saborActual)
 }
